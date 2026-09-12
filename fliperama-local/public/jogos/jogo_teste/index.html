@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Jogo Teste</title>
+</head>
+
+<body>
+  <h1>JOGO TESTE</h1>
+
+  <p>Esse jogo está rodando dentro do arcade.</p>
+
+  <button onclick="finalizarJogo()">
+    FINALIZAR JOGO
+  </button>
+
+  <script>
+    function finalizarJogo() {
+      window.parent.postMessage(
+        {
+          tipo: 'PLACAR',
+          pontos: 100
+        },
+        '*'
+      )
+    }
+</script>
+</body>
+</html>

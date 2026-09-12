@@ -1,0 +1,203 @@
+.resultado-screen {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(255, 43, 214, 0.08),
+      transparent 40%
+    ),
+    #050510;
+
+  color: white;
+
+  font-family: 'Courier New', monospace;
+
+  padding: 40px 20px;
+
+  box-sizing: border-box;
+}
+
+.resultado-container {
+  width: min(700px, 95%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+}
+
+.resultado-status {
+  margin: 0 0 15px;
+
+  color: #39ff14;
+
+  font-size: 14px;
+  font-weight: bold;
+
+  letter-spacing: 4px;
+
+  text-shadow:
+    0 0 6px #39ff14;
+}
+
+.resultado-container h1 {
+  margin: 0 0 35px;
+
+  color: #ff2bd6;
+
+  font-size: clamp(48px, 8vw, 90px);
+
+  line-height: 1;
+
+  letter-spacing: 5px;
+
+  text-shadow:
+    0 0 6px #ff2bd6,
+    0 0 20px rgba(255, 43, 214, 0.7);
+}
+
+.pontuacao-box {
+  width: min(400px, 90%);
+
+  display: flex;
+  flex-direction: column;
+
+  padding: 25px;
+
+  margin-bottom: 45px;
+
+  border: 2px solid #00f5ff;
+
+  background: rgba(0, 245, 255, 0.03);
+
+  box-shadow:
+    0 0 8px #00f5ff,
+    0 0 22px rgba(0, 245, 255, 0.35);
+
+  box-sizing: border-box;
+}
+
+.pontuacao-box span {
+  margin-bottom: 10px;
+
+  color: #00f5ff;
+
+  font-size: 15px;
+  font-weight: bold;
+
+  letter-spacing: 4px;
+}
+
+.pontuacao-box strong {
+  color: #ffe600;
+
+  font-size: clamp(45px, 7vw, 75px);
+
+  line-height: 1;
+
+  text-shadow:
+    0 0 6px #ffe600,
+    0 0 18px rgba(255, 230, 0, 0.6);
+}
+
+.avaliacao-container h2 {
+  margin: 0 0 25px;
+
+  color: white;
+
+  font-size: 22px;
+
+  letter-spacing: 3px;
+}
+
+.notas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 20px;
+}
+
+.nota {
+  width: 65px;
+  height: 65px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 2px solid #39394d;
+
+  background: #090918;
+
+  color: #a5a5b8;
+
+  font-size: 28px;
+  font-weight: bold;
+
+  box-sizing: border-box;
+
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.nota-selecionada {
+  border-color: #ffe600;
+
+  color: #ffe600;
+
+  transform: scale(1.15);
+
+  box-shadow:
+    0 0 8px #ffe600,
+    0 0 22px rgba(255, 230, 0, 0.6);
+
+  text-shadow:
+    0 0 8px #ffe600;
+}
+
+.resultado-instrucao {
+  margin: 40px 0 8px;
+
+  color: #b784ff;
+
+  font-size: 15px;
+  font-weight: bold;
+
+  letter-spacing: 2px;
+}
+
+.resultado-confirmar {
+  margin: 0;
+
+  color: #00f5ff;
+
+  font-size: 15px;
+  font-weight: bold;
+
+  letter-spacing: 2px;
+
+  text-shadow:
+    0 0 6px rgba(0, 245, 255, 0.8);
+}
+
+@media (max-width: 600px) {
+  .notas {
+    gap: 10px;
+  }
+
+  .nota {
+    width: 50px;
+    height: 50px;
+
+    font-size: 22px;
+  }
+}

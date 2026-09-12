@@ -1,0 +1,100 @@
+.arcade-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at top, rgba(0, 255, 255, 0.08), transparent 40%),
+    #050510;
+  color: white;
+  overflow: hidden;
+}
+
+.attraction-screen {
+  width: 100%;
+  max-width: 900px;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.arcade-dots {
+  color: #00f5ff;
+  letter-spacing: 10px;
+  margin-bottom: 20px;
+
+  text-shadow:
+    0 0 6px #00f5ff,
+    0 0 14px #00f5ff;
+}
+
+.arcade-title {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+
+  font-family: 'Courier New', monospace;
+  font-size: clamp(48px, 9vw, 100px);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: 5px;
+}
+
+.arcade-title span:first-child {
+  color: #ffe600;
+
+  text-shadow:
+    0 0 5px #ffe600,
+    0 0 15px rgba(255, 230, 0, 0.7);
+}
+
+.arcade-title span:last-child {
+  color: #ff2bd6;
+
+  text-shadow:
+    0 0 5px #ff2bd6,
+    0 0 18px rgba(255, 43, 214, 0.7);
+}
+
+.arcade-line {
+  width: min(500px, 70%);
+  height: 3px;
+  margin: 35px 0;
+
+  background: #00f5ff;
+
+  box-shadow:
+    0 0 8px #00f5ff,
+    0 0 18px rgba(0, 245, 255, 0.8);
+}
+
+.arcade-call {
+  margin: 0;
+
+  font-family: 'Courier New', monospace;
+  font-size: clamp(22px, 4vw, 38px);
+  font-weight: bold;
+  line-height: 1.4;
+  letter-spacing: 2px;
+
+  color: #ffffff;
+
+  text-shadow:
+    0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+.arcade-subtitle {
+  margin-top: 25px;
+
+  font-family: 'Courier New', monospace;
+  font-size: clamp(14px, 2vw, 20px);
+
+  color: #b784ff;
+}
