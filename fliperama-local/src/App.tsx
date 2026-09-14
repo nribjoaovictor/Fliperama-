@@ -1,4 +1,4 @@
-import { useState } from 'react' //É um hook do react que permite adicionar estado a componentes funcionais
+import { useState, useEffect } from 'react' //É um hook do react que permite adicionar estado a componentes funcionais
 // Ele armazena um valor e fornece uma função para atualizá-lo, garantindo que o React saiba quando re-renderizar o componente
 
 import Atracao from './pages/Atracao/Atracao'
@@ -7,6 +7,8 @@ import Jogos from './pages/Jogos/Jogos'
 import Jogo from './pages/Jogo/Jogo'
 import Resultado from './pages/Resultado/Resultado'
 import type { Jogo as TipoJogo } from './types/Jogo'
+import { verificarServidorLocal } from './service/apiLocal'
+import { enviarResultado } from './service/apiLocal'
 
 
 function App() { 
@@ -16,6 +18,19 @@ function App() {
   const [apelido, setApelido] = useState('') 
   const [jogoSelecionado, setJogoSelecionado] = useState<TipoJogo | null>(null)
   const [pontuacao, setPontuacao] = useState<number | null>(null)
+
+  useEffect(() => {
+    async function testarServidor() {
+      try {
+        const dados = await verificarServidorLocal()
+        console.log('Fastify respondeu:', dados)
+      } catch (erro) {
+        console.error('Erro ao conectar com Fastify:', erro)
+      }
+    }
+
+    testarServidor()
+  }, [])
 
   function IdentificarJogador(NovaMatricula:string, NovoApelido:string) {
       setMatricula(NovaMatricula)
@@ -33,16 +48,26 @@ function App() {
     setTela('resultado')
   }
 
-  function confirmarAvaliacao(avaliacao: number) {
-    const resultadoPartida = {
-      matricula: matricula,
-      apelido: apelido,
-      jogoId: jogoSelecionado?.id,
-      pontuacao: pontuacao,
-      avaliacao: avaliacao,
+  async function confirmarAvaliacao(avaliacao: number) {
+    if (!jogoSelecionado || pontuacao === null) {
+      return
     }
 
-    console.log('Resultado da partida:', resultadoPartida)
+    const resultadoPartida = {
+      matricula,
+      apelido,
+      jogoId: jogoSelecionado.id,
+      pontuacao,
+      avaliacao,
+    }
+
+    try {
+      const resposta = await enviarResultado(resultadoPartida)
+
+      console.log('Resultado salvo:', resposta)
+    } catch (erro) {
+      console.error('Erro ao salvar resultado:', erro)
+    }
   }
 
   // OnContinuar é uma função que será passada como prop para o componente Atracao. Está em Atracao.tsx 
