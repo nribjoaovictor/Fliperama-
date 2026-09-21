@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import './Manage.css'
 
 export function Manage() {
   const [mensagem, setMensagem] = useState('')
@@ -29,14 +30,27 @@ export function Manage() {
   }
 
   return (
-    <main>
-      <h1>Gerenciamento do Fliperama</h1>
+  <main className="manage-screen">
+    <section className="manage-panel">
+      <h1>GERENCIAMENTO DO FLIPERAMA</h1>
 
-      <button onClick={sincronizar}>
-        Sincronizar jogos
+      <p className="manage-description">
+        Sincronize os jogos disponíveis com o armazenamento local.
+      </p>
+
+      <button
+        className="manage-sync-button"
+        onClick={sincronizar}
+      >
+        SINCRONIZAR JOGOS
       </button>
 
-      {mensagem && <p>{mensagem}</p>}
-    </main>
+      {mensagem && (
+        <p className="manage-message">
+          {mensagem}
+        </p>
+      )}
+    </section>
+  </main>
   )
 }
