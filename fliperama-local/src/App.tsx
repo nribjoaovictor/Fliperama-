@@ -9,6 +9,7 @@ import Resultado from './pages/Resultado/Resultado'
 import type { Jogo as TipoJogo } from './types/Jogo'
 import { verificarServidorLocal } from './service/apiLocal'
 import { enviarResultado } from './service/apiLocal'
+import { Manage } from './pages/Manage/Manage'
 
 
 function App() { 
@@ -45,7 +46,6 @@ function App() {
 
   function FinalizarJogo(pontos: number) {
     setPontuacao(pontos)
-    setTela('resultado')
   }
 
   async function confirmarAvaliacao(avaliacao: number) {
@@ -68,6 +68,9 @@ function App() {
     } catch (erro) {
       console.error('Erro ao salvar resultado:', erro)
     }
+  }
+  if (window.location.pathname === '/manage') {
+      return <Manage />
   }
 
   // OnContinuar é uma função que será passada como prop para o componente Atracao. Está em Atracao.tsx 
@@ -96,6 +99,7 @@ function App() {
       <Jogo
         jogo={jogoSelecionado}
         onFinalizar={FinalizarJogo}
+        onVoltarInicio={() => setTela('atracao')}
       />
     )
   }
@@ -107,6 +111,7 @@ function App() {
       />
     )
   }
+  
   return null 
 }
 

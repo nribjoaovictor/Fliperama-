@@ -1,5 +1,7 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
+import fastifyStatic from '@fastify/static'
+import path from 'node:path'
 import { sincronizarJogos } from './services/sincronizacaoService'
 import {prepararFilaResultados,adicionarResultado,} from './services/filaResultadosService'
 import {prepararCatalogo,buscarCatalogo,} from './services/catalogoService'
@@ -9,6 +11,11 @@ const fastify = Fastify()
 
 await fastify.register(cors, {
   origin: 'http://localhost:5173',
+})
+
+await fastify.register(fastifyStatic, {
+  root: path.resolve('./data/jogos'),
+  prefix: '/arquivos-jogos/',
 })
 
 fastify.get('/health', async () => {

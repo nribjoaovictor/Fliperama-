@@ -17,8 +17,7 @@
 }
 
 .jogo-header {
-  width: 100%;
-  max-width: 1000px;
+  width: min(1400px, 95vw);
 
   display: flex;
   align-items: center;
@@ -48,11 +47,10 @@
 }
 
 .game-container {
-  width: min(1000px, 100%);
-  height: min(75vh, 768px);
+  width: min(1400px, 95vw);
+  height: 85vh;
 
   border: 2px solid #00f5ff;
-
   background: black;
 
   box-shadow:
@@ -69,4 +67,35 @@
   border: none;
 
   background: black;
+}
+
+.botao-inicio {
+  padding: 10px 18px;
+
+  border: 2px solid #ff2bd6;
+  border-radius: 6px;
+
+  background: transparent;
+  color: #ff2bd6;
+
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 0 5px #ff2bd6,
+    0 0 12px rgba(255, 43, 214, 0.4);
+
+  transition: 0.2s;
+}
+
+.botao-inicio:hover {
+  background: #ff2bd6;
+  color: #050510;
+
+  box-shadow:
+    0 0 8px #ff2bd6,
+    0 0 20px rgba(255, 43, 214, 0.7);
 }

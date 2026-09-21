@@ -12,13 +12,16 @@
   },
   "dependencies": {
     "@fastify/cors": "^11.3.0",
+    "@fastify/static": "^10.1.4",
+    "adm-zip": "^0.6.1",
     "fastify": "^5.12.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@types/node": "^24.13.3",
+    "@types/adm-zip": "^0.5.8",
+    "@types/node": "^24.13.4",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
