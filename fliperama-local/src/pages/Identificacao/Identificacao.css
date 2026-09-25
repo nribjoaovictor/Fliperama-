@@ -82,6 +82,10 @@
   font-size: 15px;
 }
 
+.identificacao-form .identificacao-erro {
+  color: #ff8383;
+}
+
 .identificacao-form button {
   padding: 16px 30px;
 
@@ -99,4 +103,9 @@
   box-shadow:
     0 0 10px #ffe600,
     0 0 20px rgba(255, 230, 0, 0.5);
+}
+
+.identificacao-form button:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }

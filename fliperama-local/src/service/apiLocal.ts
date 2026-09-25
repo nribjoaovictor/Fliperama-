@@ -3,7 +3,7 @@ import type { Jogo } from '../types/Jogo'
 export type ResultadoPartida = {
   matricula: string
   apelido: string
-  jogoId: number
+  jogoId: string
   pontuacao: number
   avaliacao: number
 }

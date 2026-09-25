@@ -1,5 +1,5 @@
 export type Jogo = {
-  id: number
+  id: string
   nome: string
   autores: string
   caminho: string

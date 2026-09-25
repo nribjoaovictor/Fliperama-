@@ -4,21 +4,21 @@ import { salvarCatalogo } from './catalogoService'
 
 const JOGOS = [
   {
-    id: 1,
+    id: 'orbita-do-saber',
     nome: 'Órbita do Saber',
     autores: 'Grupo do Órbita do Saber',
     repositorio: 'https://github.com/Arcade-IFES/Orbita-do-Saber',
     arquivoInicial: 'orbita-do-saber.html',
   },
   {
-    id: 2,
+    id: 'logica-em-dungeon',
     nome: 'Logic Dungeon',
     autores: 'Grupo Logic Dungeon',
     repositorio: 'https://github.com/Arcade-IFES/-Logic-Dungeon-',
     arquivoInicial: 'logic_dungeon.html',
   },
   {
-    id: 3,
+    id: 'corrida-contra-o-sino',
     nome: 'Corrida Contra o Sino',
     autores: 'Grupo Corrida Contra o Sino',
     repositorio: 'https://github.com/Arcade-IFES/Corrida-Contra-o-Sino',

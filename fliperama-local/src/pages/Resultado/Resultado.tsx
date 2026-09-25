@@ -71,7 +71,7 @@ function Resultado({ pontuacao, onConfirmar }: ResultadoProps) {
         </p>
 
         <p className="resultado-confirmar">
-          [ ENTER ] CONFIRMAR
+          [ ENTER ] CONFIRMAR E IDENTIFICAR
         </p>
       </section>
     </main>

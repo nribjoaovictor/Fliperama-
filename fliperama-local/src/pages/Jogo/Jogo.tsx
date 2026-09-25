@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import './Jogo.css'
 import type { Jogo as TipoJogo } from '../../types/Jogo'
+import { extrairPontuacao } from './extrairPontuacao'
 
 
 type JogoProps = {
@@ -10,17 +11,25 @@ type JogoProps = {
 }
 
 function Jogo({ jogo, onFinalizar, onVoltarInicio }: JogoProps) {
+  const iframe = useRef<HTMLIFrameElement>(null)
+  const finalizado = useRef(false)
 
   useEffect(() => {
-    function receberMensagem(event: MessageEvent) {
-      const mensagem = event.data
+    finalizado.current = false
+    const origemJogo = new URL(jogo.caminho, window.location.href).origin
 
+    function receberMensagem(event: MessageEvent) {
       if (
-        mensagem?.type === 'GAME_OVER' &&
-        typeof mensagem.payload?.score === 'number'
-      ) {
-        onFinalizar(mensagem.payload.score)
-      }
+        event.source !== iframe.current?.contentWindow ||
+        event.origin !== origemJogo ||
+        finalizado.current
+      ) return
+
+      const pontuacao = extrairPontuacao(event.data)
+      if (pontuacao === null) return
+
+      finalizado.current = true
+      onFinalizar(pontuacao)
     }
 
     window.addEventListener('message', receberMensagem)
@@ -28,7 +37,7 @@ function Jogo({ jogo, onFinalizar, onVoltarInicio }: JogoProps) {
     return () => {
       window.removeEventListener('message', receberMensagem)
     }
-  }, [onFinalizar])
+  }, [jogo.caminho, onFinalizar])
 
   return (
     <main className="jogo-screen">
@@ -47,6 +56,7 @@ function Jogo({ jogo, onFinalizar, onVoltarInicio }: JogoProps) {
 
         <section className="game-container">
         <iframe
+            ref={iframe}
             src={jogo.caminho}
             title={jogo.nome}
             className="game-frame"
