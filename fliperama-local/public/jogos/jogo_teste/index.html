@@ -20,8 +20,8 @@
     function finalizarJogo() {
       window.parent.postMessage(
         {
-          tipo: 'PLACAR',
-          pontos: 100
+          type: 'GAME_OVER',
+          payload: { score: 100 }
         },
         '*'
       )

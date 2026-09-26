@@ -2,33 +2,50 @@ import { useState } from 'react'
 import './Identificacao.css'
 
 type identificacaoProps = {
-    onContinuar: (matricula:string, apelido:string) => void
+    onContinuar: (matricula: string, apelido: string) => Promise<void>
 }
 
 function Identificacao( {onContinuar}: identificacaoProps ) {
     const [matricula, setMatricula] = useState('')
     const [apelido, setApelido] = useState('')
+    const [salvando, setSalvando] = useState(false)
+    const [erro, setErro] = useState('')
 
-    function Confirmar() {
-        if (matricula.length !== 12 || apelido.trim() === '') {
-            alert('Preencha todos os campos corretamente.');
-            return;
+    async function Confirmar() {
+        if (salvando) return
+
+        if (!/^\d{12}$/.test(matricula) || apelido.trim() === '') {
+            setErro('Informe uma matrícula de 12 números e um apelido.')
+            return
         }
-        onContinuar(matricula, apelido);
+
+        setSalvando(true)
+        setErro('')
+
+        try {
+            await onContinuar(matricula, apelido.trim().toUpperCase())
+        } catch {
+            setErro('Não foi possível salvar a partida. Verifique o servidor e tente novamente.')
+            setSalvando(false)
+        }
     }
         
     return (
         <main className="identificacao-screen">
-            <h1>IDENTIFICAÇÃO</h1>
+            <h1>REGISTRAR PARTIDA</h1>
 
-            <section className="identificacao-form">
+            <form className="identificacao-form" onSubmit={(event) => {
+                event.preventDefault()
+                void Confirmar()
+            }}>
             <label>
                 Matrícula
                 <input
                 type="text"
                 value={matricula}
                 maxLength={12}
-                onChange={(event) => setMatricula(event.target.value)}
+                inputMode="numeric"
+                onChange={(event) => setMatricula(event.target.value.replace(/\D/g, ''))}
                 />
             </label>
 
@@ -37,16 +54,19 @@ function Identificacao( {onContinuar}: identificacaoProps ) {
                 <input
                 type="text"
                 value={apelido}
+                maxLength={9}
                 onChange={(event) => setApelido(event.target.value)}
                 />
             </label>
 
             <p>Seu apelido aparecerá no ranking.</p>
 
-            <button onClick={Confirmar}>
-                CONTINUAR
+            {erro && <p className="identificacao-erro" role="alert">{erro}</p>}
+
+            <button type="submit" disabled={salvando}>
+                {salvando ? 'SALVANDO...' : 'SALVAR PARTIDA'}
             </button>
-            </section>
+            </form>
         </main>
     )
 }

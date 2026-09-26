@@ -5,13 +5,12 @@ import './Jogos.css'
 import type { Jogo } from '../../types/Jogo'
 
 type JogosProps = {
-    apelido: string
     onSelecionarJogo: (jogo: Jogo) => void
 }
 
 
 
-function Jogos({ apelido, onSelecionarJogo }: JogosProps) {
+function Jogos({ onSelecionarJogo }: JogosProps) {
   const [jogoSelecionado, setJogoSelecionado] = useState(0)
   const [jogos, setJogos] = useState<Jogo[]>([])
     useEffect(() => {
@@ -67,10 +66,6 @@ function Jogos({ apelido, onSelecionarJogo }: JogosProps) {
         <main className="jogos-screen">
 
             <h1>SELEÇÃO DE JOGOS</h1>
-
-            <p className="jogador-atual">
-            Jogador: {apelido}
-            </p>
 
             <section className="jogos-grid">
             {jogos.map((jogo, index) => (

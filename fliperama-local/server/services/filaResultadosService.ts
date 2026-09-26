@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { randomUUID } from 'node:crypto'
 
 const ARQUIVO_FILA = './data/fila-resultados.json'
@@ -7,12 +7,14 @@ export type ResultadoPartida = {
   id: string
   matricula: string
   apelido: string
-  jogoId: number
+  jogoId: string
   pontuacao: number
   avaliacao: number
+  jogadoEm?: string
 }
 
 export async function prepararFilaResultados() {
+  await mkdir('./data', { recursive: true })
   try {
     await readFile(ARQUIVO_FILA, 'utf-8')
   } catch {
@@ -46,15 +48,16 @@ export async function removerResultado(id: string) {
 }
 
 export async function adicionarResultado(
-  resultado: Omit<ResultadoPartida, 'id'> // todos os campos de ResultadoPartida, exceto id
+  resultado: Omit<ResultadoPartida, 'id' | 'jogadoEm'>
 ) {
   const conteudo = await readFile(ARQUIVO_FILA, 'utf-8')
 
   const fila: ResultadoPartida[] = JSON.parse(conteudo)
 
   const novoResultado: ResultadoPartida = {
-    id: randomUUID(), // randomUUID gera um identificador praticamente único para cada resultado, evitando duplicações
+    id: randomUUID(),
     ...resultado,
+    jogadoEm: new Date().toISOString(),
   }
 
   fila.push(novoResultado)
