@@ -1,11 +1,15 @@
 import type { Jogo } from '../types/Jogo'
 
 export type ResultadoPartida = {
-  matricula: string
   apelido: string
   jogoId: string
   pontuacao: number
   avaliacao: number
+  versao?: string
+  duracao_s?: number
+  acertos?: number
+  erros?: number
+  tema?: string
 }
 
 export async function verificarServidorLocal() {

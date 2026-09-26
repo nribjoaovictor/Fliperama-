@@ -3,4 +3,6 @@ export type Jogo = {
   nome: string
   autores: string
   caminho: string
+  versao?: string
+  sha256?: string
 }

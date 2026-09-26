@@ -6,6 +6,7 @@ import Jogos from './pages/Jogos/Jogos'
 import Jogo from './pages/Jogo/Jogo'
 import Resultado from './pages/Resultado/Resultado'
 import type { Jogo as TipoJogo } from './types/Jogo'
+import type { PlacarRecebido } from './pages/Jogo/extrairPontuacao'
 import { enviarResultado, verificarServidorLocal } from './service/apiLocal'
 import { Manage } from './pages/Manage/Manage'
 
@@ -13,7 +14,7 @@ import { Manage } from './pages/Manage/Manage'
 function App() {
   const [tela, setTela] = useState('atracao')
   const [jogoSelecionado, setJogoSelecionado] = useState<TipoJogo | null>(null)
-  const [pontuacao, setPontuacao] = useState<number | null>(null)
+  const [placar, setPlacar] = useState<PlacarRecebido | null>(null)
   const [avaliacao, setAvaliacao] = useState<number | null>(null)
 
   useEffect(() => {
@@ -31,39 +32,54 @@ function App() {
 
   function voltarInicio() {
     setJogoSelecionado(null)
-    setPontuacao(null)
+    setPlacar(null)
     setAvaliacao(null)
     setTela('atracao')
   }
 
   function SelecionarJogo(jogo: TipoJogo) {
     setJogoSelecionado(jogo)
-    setPontuacao(null)
+    setPlacar(null)
     setAvaliacao(null)
     setTela('jogo')
   }
 
-  function FinalizarJogo(pontos: number) {
-    setPontuacao(pontos)
+  function FinalizarJogo(resultado: PlacarRecebido) {
+    setPlacar(resultado)
     setTela('resultado')
   }
 
-  function confirmarAvaliacao(nota: number) {
+  async function confirmarAvaliacao(nota: number) {
+    if (!jogoSelecionado || !placar) throw new Error('Partida não encontrada')
+    // Nos jogos aprovados pelo G1, o apelido já veio do próprio jogo.
+    if (placar.apelido) {
+      await enviarResultado({
+        apelido: placar.apelido, jogoId: jogoSelecionado.id,
+        pontuacao: placar.pontuacao, avaliacao: nota,
+        versao: placar.versao,
+        duracao_s: placar.duracao_s, acertos: placar.acertos,
+        erros: placar.erros, tema: placar.tema,
+      })
+      voltarInicio()
+      return
+    }
     setAvaliacao(nota)
     setTela('identificacao')
   }
 
-  async function IdentificarJogador(matricula: string, apelido: string) {
-    if (!jogoSelecionado || pontuacao === null || avaliacao === null) {
+  async function IdentificarJogador(apelido: string) {
+    if (!jogoSelecionado || !placar || avaliacao === null) {
       throw new Error('Partida não encontrada')
     }
 
     const resultadoPartida = {
-      matricula,
       apelido,
       jogoId: jogoSelecionado.id,
-      pontuacao,
+      pontuacao: placar.pontuacao,
       avaliacao,
+      versao: placar.versao,
+      duracao_s: placar.duracao_s, acertos: placar.acertos,
+      erros: placar.erros, tema: placar.tema,
     }
 
     await enviarResultado(resultadoPartida)
@@ -101,10 +117,10 @@ function App() {
       />
     )
   }
-  if (tela === 'resultado' && pontuacao !== null) {
+  if (tela === 'resultado' && placar !== null) {
     return (
       <Resultado
-        pontuacao={pontuacao}
+        pontuacao={placar.pontuacao}
         onConfirmar={confirmarAvaliacao}
       />
     )

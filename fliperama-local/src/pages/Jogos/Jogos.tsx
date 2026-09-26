@@ -13,13 +13,16 @@ type JogosProps = {
 function Jogos({ onSelecionarJogo }: JogosProps) {
   const [jogoSelecionado, setJogoSelecionado] = useState(0)
   const [jogos, setJogos] = useState<Jogo[]>([])
+  const [mensagem, setMensagem] = useState('Carregando jogos aprovados...')
     useEffect(() => {
         async function carregarJogos() {
             try {
             const jogosRecebidos = await buscarJogos()
             setJogos(jogosRecebidos)
+            setMensagem(jogosRecebidos.length ? '' : 'Nenhum jogo aprovado está disponível neste fliperama.')
             } catch (erro) {
             console.error('Erro ao carregar jogos:', erro)
+            setMensagem('Não foi possível carregar os jogos. Verifique o servidor local.')
             }
         }
 
@@ -77,6 +80,8 @@ function Jogos({ onSelecionarJogo }: JogosProps) {
                 />
             ))}
             </section>
+
+            {mensagem && <p role="status">{mensagem}</p>}
 
             <p className="jogos-instrucao">
             ← → SELECIONAR • ENTER JOGAR

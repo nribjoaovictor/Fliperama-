@@ -5,7 +5,9 @@ import {
 
 import { enviarResultadoParaG1 } from './envioResultadosService'
 
-export async function reenviarPendentes() {
+let reenvio: Promise<void> | undefined
+
+async function executarReenvio() {
   const fila = await buscarFilaResultados()
 
   for (const resultado of fila) {
@@ -19,4 +21,9 @@ export async function reenviarPendentes() {
       )
     }
   }
+}
+
+export function reenviarPendentes() {
+  if (!reenvio) reenvio = executarReenvio().finally(() => { reenvio = undefined })
+  return reenvio
 }

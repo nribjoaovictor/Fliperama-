@@ -2,11 +2,10 @@ import { useState } from 'react'
 import './Identificacao.css'
 
 type identificacaoProps = {
-    onContinuar: (matricula: string, apelido: string) => Promise<void>
+    onContinuar: (apelido: string) => Promise<void>
 }
 
 function Identificacao( {onContinuar}: identificacaoProps ) {
-    const [matricula, setMatricula] = useState('')
     const [apelido, setApelido] = useState('')
     const [salvando, setSalvando] = useState(false)
     const [erro, setErro] = useState('')
@@ -14,8 +13,8 @@ function Identificacao( {onContinuar}: identificacaoProps ) {
     async function Confirmar() {
         if (salvando) return
 
-        if (!/^\d{12}$/.test(matricula) || apelido.trim() === '') {
-            setErro('Informe uma matrícula de 12 números e um apelido.')
+        if (!/^[A-Za-z0-9]{1,9}$/.test(apelido.trim())) {
+            setErro('Informe um apelido de até 9 letras ou números.')
             return
         }
 
@@ -23,7 +22,7 @@ function Identificacao( {onContinuar}: identificacaoProps ) {
         setErro('')
 
         try {
-            await onContinuar(matricula, apelido.trim().toUpperCase())
+            await onContinuar(apelido.trim().toUpperCase())
         } catch {
             setErro('Não foi possível salvar a partida. Verifique o servidor e tente novamente.')
             setSalvando(false)
@@ -39,23 +38,12 @@ function Identificacao( {onContinuar}: identificacaoProps ) {
                 void Confirmar()
             }}>
             <label>
-                Matrícula
-                <input
-                type="text"
-                value={matricula}
-                maxLength={12}
-                inputMode="numeric"
-                onChange={(event) => setMatricula(event.target.value.replace(/\D/g, ''))}
-                />
-            </label>
-
-            <label>
                 Apelido
                 <input
                 type="text"
                 value={apelido}
                 maxLength={9}
-                onChange={(event) => setApelido(event.target.value)}
+                onChange={(event) => setApelido(event.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
                 />
             </label>
 

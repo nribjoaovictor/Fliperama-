@@ -3,11 +3,13 @@ import './Resultado.css'
 
 type ResultadoProps = {
   pontuacao: number
-  onConfirmar: (avaliacao: number) => void
+  onConfirmar: (avaliacao: number) => Promise<void>
 }
 
 function Resultado({ pontuacao, onConfirmar }: ResultadoProps) {
   const [avaliacao, setAvaliacao] = useState(3)
+  const [salvando, setSalvando] = useState(false)
+  const [erro, setErro] = useState('')
 
   useEffect(() => {
     function aoPressionarTecla(event: KeyboardEvent) {
@@ -23,8 +25,13 @@ function Resultado({ pontuacao, onConfirmar }: ResultadoProps) {
         )
       }
 
-      if (event.key === 'Enter') {
-        onConfirmar(avaliacao)
+      if (event.key === 'Enter' && !salvando) {
+        setSalvando(true)
+        setErro('')
+        void onConfirmar(avaliacao).catch(() => {
+          setErro('Não foi possível salvar a partida no fliperama. Tente novamente.')
+          setSalvando(false)
+        })
       }
     }
 
@@ -33,7 +40,7 @@ function Resultado({ pontuacao, onConfirmar }: ResultadoProps) {
     return () => {
       window.removeEventListener('keydown', aoPressionarTecla)
     }
-  }, [avaliacao, onConfirmar])
+  }, [avaliacao, onConfirmar, salvando])
 
   return (
     <main className="resultado-screen">
@@ -71,8 +78,9 @@ function Resultado({ pontuacao, onConfirmar }: ResultadoProps) {
         </p>
 
         <p className="resultado-confirmar">
-          [ ENTER ] CONFIRMAR E IDENTIFICAR
+          [ ENTER ] CONFIRMAR E SALVAR
         </p>
+        {erro && <p role="alert">{erro}</p>}
       </section>
     </main>
   )
