@@ -101,3 +101,36 @@ test('CORS_ORIGIN personalizado permite requisicoes da origem configurada', asyn
     process.env.CORS_ORIGIN = envOriginalCors
   }
 })
+
+test('disparo de deploy hook via POST simula com sucesso o gatilho de CI/CD', async () => {
+  const http = await import('node:http')
+  let hookChamado = false
+
+  const server = http.createServer((req, res) => {
+    if (req.method === 'POST' && req.url === '/hook-deploy') {
+      hookChamado = true
+      res.writeHead(200, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ job: { id: 'dep-test', status: 'created' } }))
+    } else {
+      res.writeHead(404)
+      res.end()
+    }
+  })
+
+  await new Promise<void>((resolve) => server.listen(0, resolve))
+  const endereco = server.address()
+  const porta = typeof endereco === 'object' && endereco ? endereco.port : 0
+
+  try {
+    const resposta = await fetch(`http://127.0.0.1:${porta}/hook-deploy`, {
+      method: 'POST',
+    })
+    assert.equal(resposta.status, 200)
+    assert.equal(hookChamado, true)
+    const corpo = (await resposta.json()) as { job: { status: string } }
+    assert.equal(corpo.job.status, 'created')
+  } finally {
+    await new Promise((resolve) => server.close(resolve))
+  }
+})
+

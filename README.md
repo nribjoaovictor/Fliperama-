@@ -49,20 +49,22 @@ A aplicação possui modo de demonstração pública na nuvem operando sem custo
 | `VITE_API_URL` | `http://localhost:3000` | Vercel | URL pública do backend no Render |
 | `VITE_DESTINO_PLACARES` | — | Vercel | Quando definido como `log`, ativa o aviso de modo demo no frontend |
 
+> **Atenção**: O deploy só acontece via GitHub Actions; não reative o auto-deploy nas plataformas. Isso impede que versões quebradas cheguem à produção e elimina builds duplicados a cada push.
+
 ### Configuração Inicial (Checklist)
 
 1. **Habilitar Actions no Fork**: acesse a aba *Actions* do fork e clique em *"I understand my workflows, go ahead and enable them"*.
 2. **Backend no Render**:
    - Crie um *Web Service* conectando o fork (`branch: main`, `Root Directory: fliperama-local`).
    - Build: `npm ci --include=dev` | Start: `npx tsx server/server.ts` | Health Check: `/health`.
-   - Marque **Auto-Deploy: No** para que o deploy ocorra apenas após o CI validar os testes.
+   - Em *Settings → Build & Deploy*, altere **Auto-Deploy** para **No**. O Render deixará de compilar a cada push, aguardando o sinal do CI.
    - Variáveis: `MODO_OPERACAO=web`, `FONTE_JOGOS=github-fixo`, `DESTINO_PLACARES=log`, `NODE_VERSION=24`.
-   - Crie um *Deploy Hook* em *Settings* e cadastre o secret `RENDER_DEPLOY_HOOK_URL` no GitHub do fork.
+   - Em *Settings → Deploy Hook*, crie um gancho e cadastre a URL no secret `RENDER_DEPLOY_HOOK_URL` do repositório no GitHub. O Deploy Hook continua funcionando normalmente mesmo com o auto-deploy desativado.
 3. **Frontend na Vercel**:
    - Importe o fork no plano Hobby (`Root Directory: fliperama-local`, `Framework: Vite`).
+   - O arquivo `vercel.json` do repositório já contém `"git": { "deploymentEnabled": false }`, o que desativa automaticamente as publicações a cada push no Git.
    - Variáveis: `FONTE_JOGOS=github-fixo`, `VITE_API_URL=<URL do Render>`, `VITE_DESTINO_PLACARES=log`.
-   - Crie um *Deploy Hook* para a branch `main` em *Settings → Git* e cadastre o secret `VERCEL_DEPLOY_HOOK_URL` no GitHub do fork.
-   - *Prevenção de deploy duplicado*: o deploy de produção é disparado pelo `VERCEL_DEPLOY_HOOK_URL` pós-CI verde. No painel da Vercel (*Settings → Git → Ignored Build Step*), builds automáticos de push podem ser restritos a preview ou cancelados para aguardar o hook oficial.
+   - Em *Settings → Git → Deploy Hooks*, crie um gancho apontando para a branch `main` e cadastre a URL no secret `VERCEL_DEPLOY_HOOK_URL` do GitHub. O Deploy Hook ignora a trava do Git e publica normalmente quando acionado pelo GitHub Actions pós-CI verde.
 4. **CORS no Render**: adicione a variável `CORS_ORIGIN` no Render com a URL gerada pela Vercel.
 
 ### Rollback em 1 Clique
