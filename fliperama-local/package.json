@@ -9,6 +9,7 @@
     "sync:jogos": "node scripts/sync-jogos-build.mjs",
     "build": "npm run sync:jogos && tsc -b && vite build",
     "test": "node --import tsx --test tests/*.test.ts",
+    "test:run": "npm test",
     "lint": "eslint .",
     "preview": "vite preview"
   },
