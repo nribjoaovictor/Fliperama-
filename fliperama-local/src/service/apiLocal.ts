@@ -8,8 +8,20 @@ export type ResultadoPartida = {
   avaliacao: number
 }
 
+export function obterUrlApi(): string {
+  const url = import.meta.env.VITE_API_URL
+  return url ? url.replace(/\/$/, '') : 'http://localhost:3000'
+}
+
+function normalizarCaminho(caminho: string): string {
+  if (caminho.startsWith('http://localhost:3000/arquivos-jogos/')) {
+    return caminho.replace('http://localhost:3000/arquivos-jogos/', '/jogos/')
+  }
+  return caminho
+}
+
 export async function verificarServidorLocal() {
-  const resposta = await fetch('http://localhost:3000/health') // fetch, por default, é Get. Faz uma requisição para o servidor.
+  const resposta = await fetch(`${obterUrlApi()}/health`)
 
   if (!resposta.ok) {
     throw new Error('Servidor local indisponível')
@@ -18,23 +30,34 @@ export async function verificarServidorLocal() {
   return resposta.json()
 }
 
-
 export async function buscarJogos(): Promise<Jogo[]> {
-  const resposta = await fetch('http://localhost:3000/jogos')
-
-  if (!resposta.ok) {
-    throw new Error('Não foi possível buscar os jogos')
+  try {
+    const resposta = await fetch(`${obterUrlApi()}/jogos`)
+    if (resposta.ok) {
+      const jogos: Jogo[] = await resposta.json()
+      return jogos.map((j) => ({ ...j, caminho: normalizarCaminho(j.caminho) }))
+    }
+  } catch {
+    // API dormindo ou offline: busca catálogo estático na CDN
   }
 
-  return resposta.json()
-}
+  try {
+    const respostaEstatica = await fetch('/jogos/catalogo.json')
+    if (respostaEstatica.ok) {
+      return await respostaEstatica.json()
+    }
+  } catch {
+    // Catálogo estático indisponível
+  }
 
+  throw new Error('Não foi possível buscar os jogos')
+}
 
 export async function enviarResultado(
   resultado: ResultadoPartida
 ) {
   const resposta = await fetch(
-    'http://localhost:3000/resultados',
+    `${obterUrlApi()}/resultados`,
     {
       method: 'POST',
       headers: {
@@ -50,3 +73,4 @@ export async function enviarResultado(
 
   return resposta.json()
 }
+

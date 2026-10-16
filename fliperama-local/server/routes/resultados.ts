@@ -34,6 +34,23 @@ export async function registrarRotaResultados(fastify: FastifyInstance) {
       return reply.code(400).send({ sucesso: false, erro: 'Dados da partida inválidos.' })
     }
 
+    if (process.env.MODO_OPERACAO === 'web') {
+      const resultadoWeb = {
+        id: crypto.randomUUID(),
+        matricula: anonimo ? '' : resultado.matricula,
+        apelido,
+        jogoId: resultado.jogoId,
+        pontuacao: resultado.pontuacao,
+        avaliacao: resultado.avaliacao,
+        jogadoEm: new Date().toISOString(),
+      }
+      console.log('[MODO WEB] Placar recebido (log):', JSON.stringify(resultadoWeb))
+      return {
+        sucesso: true,
+        resultado: resultadoWeb,
+      }
+    }
+
     const resultadoSalvo = await adicionarResultado({
       matricula: anonimo ? '' : resultado.matricula,
       apelido,

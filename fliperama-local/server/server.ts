@@ -11,7 +11,7 @@ import { registrarRotaResultados } from './routes/resultados'
 const fastify = Fastify()
 
 await fastify.register(cors, {
-  origin: 'http://localhost:5173',
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
 })
 
 await fastify.register(fastifyStatic, {
@@ -22,6 +22,7 @@ await fastify.register(fastifyStatic, {
 fastify.get('/health', async () => {
   return {
     status: 'ok',
+    modo: process.env.MODO_OPERACAO || 'local',
     sistema: 'Recreio Arcade',
   }
 })
@@ -41,38 +42,49 @@ fastify.post('/sincronizar', async () => {
 
 await fastify.register(registrarRotaResultados)
 
+export async function criarApp() {
+  return fastify
+}
+
 async function iniciarServidor() {
   try {
-    await prepararCatalogo()
-    await prepararFilaResultados()
+    const modoWeb = process.env.MODO_OPERACAO === 'web'
+    const porta = Number(process.env.PORT) || 3000
 
-    try {
-      await sincronizarJogos()
-    } catch (erro) {
-      console.error('Não foi possível atualizar os jogos. Usando o catálogo local.', erro)
+    if (!modoWeb) {
+      await prepararCatalogo()
+      await prepararFilaResultados()
+
+      try {
+        await sincronizarJogos()
+      } catch (erro) {
+        console.error('Não foi possível atualizar os jogos. Usando o catálogo local.', erro)
+      }
     }
 
     await fastify.listen({
-      port: 3000,
+      port: porta,
       host: '0.0.0.0',
     })
 
     console.log(
-      'Servidor local rodando em http://localhost:3000'
+      `Servidor rodando em http://0.0.0.0:${porta} (modo: ${process.env.MODO_OPERACAO || 'local'})`
     )
 
-    reenviarPendentes().catch((erro) => {
-      console.error('Erro ao reenviar resultados:', erro)
-    })
-
-    setInterval(() => {
+    if (!modoWeb) {
       reenviarPendentes().catch((erro) => {
-        console.error(
-          'Erro ao reenviar resultados:',
-          erro
-        )
+        console.error('Erro ao reenviar resultados:', erro)
       })
-    }, 30_000)
+
+      setInterval(() => {
+        reenviarPendentes().catch((erro) => {
+          console.error(
+            'Erro ao reenviar resultados:',
+            erro
+          )
+        })
+      }, 30_000)
+    }
 
   } catch (erro) {
     fastify.log.error(erro)
@@ -80,4 +92,9 @@ async function iniciarServidor() {
   }
 }
 
-iniciarServidor()
+import { fileURLToPath } from 'node:url'
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
+  iniciarServidor()
+}
+
