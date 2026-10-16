@@ -30,3 +30,4 @@ dist-ssr
 
 # Dados gerados pelo Fliperama Local
 data/
+public/jogos/
