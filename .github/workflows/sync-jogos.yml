@@ -1,0 +1,24 @@
+name: Sincronizar Jogos e Rebuild
+
+on:
+  schedule:
+    # Executa diariamente às 03:00 UTC (workflows agendados podem desativar após 60 dias de inatividade)
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild-vercel:
+    name: Acionar Rebuild na Vercel
+    if: github.repository == 'nribjoaovictor/Fliperama-' || github.repository == 'Arcade-IFES/Fliperama-'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar Deploy Hook da Vercel
+        if: env.VERCEL_HOOK != ''
+        env:
+          VERCEL_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          echo "Disparando rebuild da Vercel com pacotes de jogos atualizados..."
+          curl -fsS -X POST "$VERCEL_HOOK"

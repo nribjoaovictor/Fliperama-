@@ -8,25 +8,38 @@ import Resultado from './pages/Resultado/Resultado'
 import type { Jogo as TipoJogo } from './types/Jogo'
 import { enviarResultado, verificarServidorLocal } from './service/apiLocal'
 import { Manage } from './pages/Manage/Manage'
-
+import './App.css'
 
 function App() {
   const [tela, setTela] = useState('atracao')
   const [jogoSelecionado, setJogoSelecionado] = useState<TipoJogo | null>(null)
   const [pontuacao, setPontuacao] = useState<number | null>(null)
   const [avaliacao, setAvaliacao] = useState<number | null>(null)
+  const [acordandoServidor, setAcordandoServidor] = useState(false)
+
+  const modoDemo = import.meta.env.VITE_DESTINO_PLACARES === 'log'
 
   useEffect(() => {
+    let cancelado = false
+
     async function testarServidor() {
       try {
-        const dados = await verificarServidorLocal()
-        console.log('Fastify respondeu:', dados)
-      } catch (erro) {
-        console.error('Erro ao conectar com Fastify:', erro)
+        await verificarServidorLocal()
+        if (!cancelado) {
+          setAcordandoServidor(false)
+        }
+      } catch {
+        if (!cancelado) {
+          setAcordandoServidor(true)
+          setTimeout(testarServidor, 4000)
+        }
       }
     }
 
     testarServidor()
+    return () => {
+      cancelado = true
+    }
   }, [])
 
   function voltarInicio() {
@@ -69,49 +82,85 @@ function App() {
     await enviarResultado(resultadoPartida)
     voltarInicio()
   }
+
+  function renderizarBanners() {
+    if (!modoDemo && !acordandoServidor) return null
+
+    return (
+      <aside className="status-banner-container" aria-live="polite">
+        {acordandoServidor && (
+          <div className="status-banner cold-start">
+            ⏳ Acordando servidor na nuvem (free tier)... Os jogos continuam liberados!
+          </div>
+        )}
+        {modoDemo && (
+          <div className="status-banner demo">
+            🕹️ Modo demonstração: placares registrados localmente
+          </div>
+        )}
+      </aside>
+    )
+  }
+
   if (window.location.pathname === '/manage') {
-      return <Manage />
+    return (
+      <>
+        {renderizarBanners()}
+        <Manage />
+      </>
+    )
   }
 
   if (tela === 'atracao') {
-    return (<Atracao 
-        onContinuar={() => setTela('jogos')}
-    />)
+    return (
+      <>
+        {renderizarBanners()}
+        <Atracao onContinuar={() => setTela('jogos')} />
+      </>
+    )
   }
 
   if (tela === 'identificacao') {
-    return (<Identificacao 
-        onContinuar={IdentificarJogador}
-    />)
+    return (
+      <>
+        {renderizarBanners()}
+        <Identificacao onContinuar={IdentificarJogador} />
+      </>
+    )
   }
 
   if (tela === 'jogos') {
     return (
-      <Jogos
-        onSelecionarJogo={SelecionarJogo}
-      />
-  )}
+      <>
+        {renderizarBanners()}
+        <Jogos onSelecionarJogo={SelecionarJogo} />
+      </>
+    )
+  }
 
   if (tela === 'jogo' && jogoSelecionado !== null) {
     return (
-      <Jogo
-        jogo={jogoSelecionado}
-        onFinalizar={FinalizarJogo}
-        onVoltarInicio={voltarInicio}
-      />
+      <>
+        {renderizarBanners()}
+        <Jogo
+          jogo={jogoSelecionado}
+          onFinalizar={FinalizarJogo}
+          onVoltarInicio={voltarInicio}
+        />
+      </>
     )
   }
+
   if (tela === 'resultado' && pontuacao !== null) {
     return (
-      <Resultado
-        pontuacao={pontuacao}
-        onConfirmar={confirmarAvaliacao}
-      />
+      <>
+        {renderizarBanners()}
+        <Resultado pontuacao={pontuacao} onConfirmar={confirmarAvaliacao} />
+      </>
     )
   }
-  
-  return null 
-}
 
+  return null
+}
 
 export default App

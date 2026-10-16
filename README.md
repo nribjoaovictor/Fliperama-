@@ -25,3 +25,52 @@ Os IDs usados hoje no catálogo são `orbita-do-saber`, `logica-em-dungeon` e `c
 **Jogar sem identificação nos três jogos:** depois da partida e da avaliação, o botão `JOGAR SEM IDENTIFICAÇÃO` salva pontuação e voto com apelido `ANON` e matrícula vazia e retorna à tela inicial. `Corrida-Contra-o-Sino` já envia `GAME_OVER`. Na sincronização, o fliperama adapta somente as cópias locais de `Orbita-do-Saber` e `-Logic-Dungeon-` para enviar `PLACAR` com `payload.pontos`, sem pedir nome dentro do jogo. Os repositórios das equipes não são modificados. A integração usa o iframe com `sandbox="allow-scripts"`; não precisa de `localStorage`. Se a função de fim do jogo mudar, a sincronização informa o erro para revisão do adaptador.
 
 Para testar com o mock do G2, rode o mock na porta 4000 (`PORT=4000`) e aponte `API_G1` para `http://localhost:4000`. Para testar só a captura, `public/jogos/jogo_teste/index.html` contém uma partida de exemplo que envia `GAME_OVER`.
+
+---
+
+## Demonstração Web e Deploy Contínuo
+
+A aplicação possui modo de demonstração pública na nuvem operando sem custos:
+
+- **Frontend + Jogos Estáticos (Vercel Hobby)**: CDN global com 100 GB/mês de transferência gratuita e zero cold start.
+- **Backend API (Render Free Web Service)**: serviço Node (512 MB) sem dependência de persistência em disco.
+
+> **Aviso para a equipe**: este deploy web é mantido na infraestrutura gratuita pessoal do mantenedor do fork (`nribjoaovictor/Fliperama-`). Se os serviços na nuvem forem suspensos ou hibernarem, o quiosque físico local continua operando de forma 100% autônoma (`MODO_OPERACAO=local`).
+
+### Variáveis de Ambiente
+
+| Variável | Padrão | Onde configurar | Finalidade |
+| --- | --- | --- | --- |
+| `MODO_OPERACAO` | `local` | Render / Local | `local`: fila em disco e boot com sync; `web`: boot em <1s sem disco |
+| `FONTE_JOGOS` | `github-fixo` | Render / Vercel | `github-fixo`: repositórios conhecidos; `g1`: catálogo dinâmico da API central |
+| `DESTINO_PLACARES` | `local` (ou `log` em web) | Render | `local`: fila atômica em disco; `log`: registro em log na demo; `g1`: envio à API |
+| `CORS_ORIGIN` | `http://localhost:5173` | Render | Origem autorizada do frontend na Vercel (ex: `https://fliperama-local.vercel.app`) |
+| `PORT` | `3000` | Render | Porta dinâmica injetada pela nuvem |
+| `VITE_API_URL` | `http://localhost:3000` | Vercel | URL pública do backend no Render |
+| `VITE_DESTINO_PLACARES` | — | Vercel | Quando definido como `log`, ativa o aviso de modo demo no frontend |
+
+### Configuração Inicial (Checklist)
+
+1. **Habilitar Actions no Fork**: acesse a aba *Actions* do fork e clique em *"I understand my workflows, go ahead and enable them"*.
+2. **Backend no Render**:
+   - Crie um *Web Service* conectando o fork (`branch: main`, `Root Directory: fliperama-local`).
+   - Build: `npm ci --include=dev` | Start: `npx tsx server/server.ts` | Health Check: `/health`.
+   - Marque **Auto-Deploy: No** para que o deploy ocorra apenas após o CI validar os testes.
+   - Variáveis: `MODO_OPERACAO=web`, `FONTE_JOGOS=github-fixo`, `DESTINO_PLACARES=log`, `NODE_VERSION=24`.
+   - Crie um *Deploy Hook* em *Settings* e cadastre o secret `RENDER_DEPLOY_HOOK_URL` no GitHub do fork.
+3. **Frontend na Vercel**:
+   - Importe o fork no plano Hobby (`Root Directory: fliperama-local`, `Framework: Vite`).
+   - Variáveis: `FONTE_JOGOS=github-fixo`, `VITE_API_URL=<URL do Render>`, `VITE_DESTINO_PLACARES=log`.
+   - Crie um *Deploy Hook* para a branch `main` em *Settings → Git* e cadastre o secret `VERCEL_DEPLOY_HOOK_URL` no GitHub do fork.
+   - *Prevenção de deploy duplicado*: o deploy de produção é disparado pelo `VERCEL_DEPLOY_HOOK_URL` pós-CI verde. No painel da Vercel (*Settings → Git → Ignored Build Step*), builds automáticos de push podem ser restritos a preview ou cancelados para aguardar o hook oficial.
+4. **CORS no Render**: adicione a variável `CORS_ORIGIN` no Render com a URL gerada pela Vercel.
+
+### Rollback em 1 Clique
+
+- **Render**: no dashboard do serviço, aba *Deploys*, selecione a versão funcional anterior e clique em **Rollback to this deploy**.
+- **Vercel**: no painel do projeto, aba *Deployments*, clique em `...` na versão estável anterior e selecione **Promote to Production**.
+
+### Atualização dos Jogos (Workflows Agendados)
+
+O script `sync-jogos-build.mjs` roda automaticamente no build da Vercel, baixando pacotes, validando SHA-256 e gerando o catálogo estático.
+O workflow `.github/workflows/sync-jogos.yml` aciona um rebuild diário. No GitHub, execuções agendadas (`cron`) são pausadas automaticamente após 60 dias sem atividade no repositório; para atualizar imediatamente, use o botão manual **Run workflow** na aba *Actions*.

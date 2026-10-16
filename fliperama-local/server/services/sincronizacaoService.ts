@@ -4,7 +4,7 @@ import path from 'node:path'
 import { salvarCatalogo } from './catalogoService'
 import { adaptarArquivoDoJogo } from './adaptacaoJogosService'
 
-const JOGOS = [
+export const JOGOS = [
   {
     id: 'orbita-do-saber',
     nome: 'Órbita do Saber',

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { obterUrlApi } from '../../service/apiLocal'
 import './Manage.css'
 
 export function Manage() {
@@ -8,12 +9,10 @@ export function Manage() {
     setMensagem('Sincronizando...')
 
     try {
-      const resposta = await fetch(
-        'http://localhost:3000/sincronizar',
-        {
-          method: 'POST',
-        }
-      )
+      const urlApi = obterUrlApi()
+      const resposta = await fetch(`${urlApi}/sincronizar`, {
+        method: 'POST',
+      })
 
       if (!resposta.ok) {
         throw new Error('Erro ao sincronizar')

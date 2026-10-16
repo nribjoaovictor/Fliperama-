@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "server": "tsx watch server/server.ts",
-    "build": "tsc -b && vite build",
+    "sync:jogos": "node scripts/sync-jogos-build.mjs",
+    "build": "npm run sync:jogos && tsc -b && vite build",
     "test": "node --import tsx --test tests/*.test.ts",
     "lint": "eslint .",
     "preview": "vite preview"

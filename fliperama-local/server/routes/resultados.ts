@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify'
-import { adicionarResultado } from '../services/filaResultadosService'
+import { processarResultado } from '../services/processadorResultadosService'
 
 export async function registrarRotaResultados(fastify: FastifyInstance) {
   fastify.post('/resultados', async (request, reply) => {
@@ -34,7 +34,7 @@ export async function registrarRotaResultados(fastify: FastifyInstance) {
       return reply.code(400).send({ sucesso: false, erro: 'Dados da partida inválidos.' })
     }
 
-    const resultadoSalvo = await adicionarResultado({
+    const resultadoSalvo = await processarResultado({
       matricula: anonimo ? '' : resultado.matricula,
       apelido,
       jogoId: resultado.jogoId,
