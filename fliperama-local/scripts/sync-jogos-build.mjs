@@ -100,8 +100,14 @@ async function baixarComRetry(url, maxTentativas = 3, timeoutMs = 15000) {
 }
 
 async function sincronizar() {
+  const fonteJogos = process.env.FONTE_JOGOS || 'github-fixo'
+  console.log(`[sync:jogos] Fonte ativa: ${fonteJogos}`)
   console.log('[sync:jogos] Iniciando sincronização para public/jogos/...')
   await mkdir(PASTA_DESTINO, { recursive: true })
+
+  if (fonteJogos === 'g1') {
+    console.log('[sync:jogos] Modo g1: consulta a API de Gestão G1 (quando endpoint estiver disponível).')
+  }
 
   const catalogo = []
 

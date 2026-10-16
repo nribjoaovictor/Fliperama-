@@ -21,6 +21,8 @@ function App() {
 
   useEffect(() => {
     let cancelado = false
+    let tentativas = 0
+    const maxTentativas = 15
 
     async function testarServidor() {
       try {
@@ -30,8 +32,13 @@ function App() {
         }
       } catch {
         if (!cancelado) {
-          setAcordandoServidor(true)
-          setTimeout(testarServidor, 4000)
+          tentativas++
+          if (tentativas < maxTentativas) {
+            setAcordandoServidor(true)
+            setTimeout(testarServidor, 4000)
+          } else {
+            setAcordandoServidor(false)
+          }
         }
       }
     }

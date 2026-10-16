@@ -56,19 +56,18 @@ jobs:
     needs: validate
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
+    env:
+      RENDER_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+      VERCEL_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
     steps:
       - name: Disparar Deploy no Render
         if: env.RENDER_HOOK != ''
-        env:
-          RENDER_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         run: |
           echo "Disparando deploy no Render..."
           curl -fsS -X POST "$RENDER_HOOK"
 
       - name: Disparar Deploy na Vercel
         if: env.VERCEL_HOOK != ''
-        env:
-          VERCEL_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
         run: |
           echo "Disparando deploy na Vercel..."
           curl -fsS -X POST "$VERCEL_HOOK"

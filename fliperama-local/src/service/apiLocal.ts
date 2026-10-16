@@ -78,7 +78,23 @@ export async function enviarResultado(resultado: ResultadoPartida) {
       if (resposta.ok) {
         return await resposta.json()
       }
+
+      if (resposta.status >= 400 && resposta.status < 500) {
+        const erroJson = (await resposta.json().catch(() => ({}))) as {
+          erro?: string
+        }
+        throw new Error(
+          erroJson.erro || `Erro na requisição: ${resposta.status}`
+        )
+      }
     } catch (erro) {
+      if (
+        erro instanceof Error &&
+        (erro.message.startsWith('Erro na requisição') ||
+          erro.message.includes('inválid'))
+      ) {
+        throw erro
+      }
       console.warn(
         `Tentativa ${tentativa}/${maxTentativas} de envio do placar falhou:`,
         erro
