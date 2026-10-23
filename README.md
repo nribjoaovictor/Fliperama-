@@ -30,6 +30,8 @@ Para testar com o mock do G2, rode o mock na porta 4000 (`PORT=4000`) e aponte `
 
 ## Demonstração Web e Deploy na Nuvem
 
+**Deploy:** <https://fliperama-local.vercel.app/>
+
 A aplicação conta com um modo de demonstração pública hospedado em camada gratuita:
 
 * **Frontend e Jogos (Vercel Hobby)**: CDN global com catálogo estático gerado no build (`npm run sync:jogos`). A Vercel realiza deploy a cada push na branch `main`; a proteção contra versões com erro vem da branch protection do GitHub exigindo que o CI esteja verde nos PRs antes do merge.
@@ -40,7 +42,7 @@ A aplicação conta com um modo de demonstração pública hospedado em camada g
 | Variável | Padrão | Onde configurar | Finalidade |
 | --- | --- | --- | --- |
 | `MODO_OPERACAO` | `local` | Render | `web`: inicialização imediata sem disco; `local`: quiosque físico com fila atômica |
-| `CORS_ORIGIN` | `http://localhost:5173` | Render | URL autorizada do frontend na Vercel (ex: `https://fliperama-local.vercel.app`) |
+| `CORS_ORIGIN` | `http://localhost:5173` | Render | `https://fliperama-local.vercel.app` |
 | `PORT` | `3000` | Render | Porta dinâmica injetada pela plataforma de nuvem |
 | `VITE_API_URL` | `http://localhost:3000` | Vercel | URL pública da API no Render |
 
