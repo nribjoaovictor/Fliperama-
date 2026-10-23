@@ -37,14 +37,17 @@ async function sincronizar() {
   await mkdir(PASTA_DESTINO, { recursive: true })
 
   const catalogo = []
+  const forcarAtualizacao = process.argv.includes('--force') || process.env.SYNC_FORCE === '1'
 
   for (const jogo of JOGOS) {
     const nomeRepositorio = jogo.repositorio.split('/').pop()!
     const pastaJogo = path.join(PASTA_DESTINO, `${nomeRepositorio}-main`)
     const arquivoEntrada = path.join(pastaJogo, jogo.arquivoInicial)
 
-    if (existsSync(arquivoEntrada)) {
-      console.log(`[sync:jogos] ${jogo.nome} já presente em public/jogos/.`)
+    if (!forcarAtualizacao && existsSync(arquivoEntrada)) {
+      // Idempotente: garante a adaptação também em cópias vindas de cache de build.
+      await adaptarArquivoDoJogo(arquivoEntrada, jogo.id)
+      console.log(`[sync:jogos] ${jogo.nome} já presente em public/jogos/ (adaptação verificada).`)
     } else {
       console.log(`[sync:jogos] Baixando ${jogo.nome}...`)
       const urlZip = `${jogo.repositorio}/archive/refs/heads/main.zip`

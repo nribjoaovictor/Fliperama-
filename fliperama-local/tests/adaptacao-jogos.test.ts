@@ -38,9 +38,28 @@ for (const jogo of [
   }
 }
 
-test('mantém Corrida Contra o Sino e rejeita alterações inesperadas nos jogos adaptados', () => {
+test('mantém Corrida Contra o Sino e Estrelas da Ciência e rejeita alterações inesperadas nos jogos adaptados', () => {
   const html = '<html>jogo com integração própria</html>'
   assert.equal(adaptarHtmlDoJogo(html, 'corrida-contra-o-sino'), html)
+  assert.equal(adaptarHtmlDoJogo(html, 'estrelas-da-ciencia'), html)
   assert.throws(() => adaptarHtmlDoJogo(html, 'orbita-do-saber'), /função de fim alterada/)
   assert.throws(() => adaptarHtmlDoJogo('function gameOver() {} function gameOver() {}', 'logica-em-dungeon'), /função de fim alterada/)
+})
+
+test('embute questoes.json quando o jogo usa fetch, sem duplicar', async () => {
+  const html = '<html><head></head><script>fetch("questoes.json")</script></html>'
+  const questoes = JSON.stringify({ questoes: [{ q: 'a</script>' }] })
+  const adaptado = adaptarHtmlDoJogo(html, 'estrelas-da-ciencia', questoes)
+
+  assert.match(adaptado, /fliperama: questoes embutidas/)
+  assert.equal(adaptado.includes('a</script>'), false)
+  assert.equal(adaptarHtmlDoJogo(adaptado, 'estrelas-da-ciencia', questoes), adaptado)
+  assert.equal(adaptarHtmlDoJogo('<html>sem fetch</html>', 'estrelas-da-ciencia', questoes), '<html>sem fetch</html>')
+
+  const script = adaptado.match(/<script>(\/\* fliperama[\s\S]*?)<\/script>/)![1]
+  const contexto = { window: { fetch: async () => 'original' } as Record<string, unknown>, Response }
+  runInNewContext(script, contexto)
+  const fetchAdaptado = contexto.window.fetch as (url: string) => Promise<Response>
+  assert.deepEqual(await (await fetchAdaptado('questoes.json')).json(), JSON.parse(questoes))
+  assert.equal(await fetchAdaptado('outro.json'), 'original')
 })
