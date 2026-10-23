@@ -3,20 +3,27 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 export function extrairPontuacao(mensagem: unknown, jogoEsperado: string): number | null {
-  if (!isRecord(mensagem) || mensagem.jogo !== jogoEsperado || !isRecord(mensagem.payload)) {
+  if (!isRecord(mensagem) || mensagem.jogo !== jogoEsperado) {
     return null
   }
 
-  const campoPontuacao = mensagem.type === 'PLACAR'
-    ? 'pontos'
-    : mensagem.type === 'GAME_OVER'
-      ? 'score'
-      : null
+  const tipo = mensagem.type ?? mensagem.tipo
+  if (tipo !== 'PLACAR' && tipo !== 'GAME_OVER') return null
 
-  if (campoPontuacao === null) return null
+  if (isRecord(mensagem.payload)) {
+    const campoPontuacao = tipo === 'PLACAR' ? 'pontos' : 'score'
+    const pontuacao = mensagem.payload[campoPontuacao]
+    if (typeof pontuacao === 'number' && Number.isFinite(pontuacao) && pontuacao >= 0) {
+      return pontuacao
+    }
+  }
 
-  const pontuacao = mensagem.payload[campoPontuacao]
-  return typeof pontuacao === 'number' && Number.isFinite(pontuacao) && pontuacao >= 0
-    ? pontuacao
-    : null
+  const campoDireto = tipo === 'PLACAR' ? 'pontos' : 'score'
+  const pontuacaoDireta = mensagem[campoDireto]
+  if (typeof pontuacaoDireta === 'number' && Number.isFinite(pontuacaoDireta) && pontuacaoDireta >= 0) {
+    return pontuacaoDireta
+  }
+
+  return null
 }
+

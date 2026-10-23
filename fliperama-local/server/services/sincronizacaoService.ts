@@ -10,14 +10,14 @@ export const JOGOS = [
     nome: 'Órbita do Saber',
     autores: 'Grupo do Órbita do Saber',
     repositorio: 'https://github.com/Arcade-IFES/Orbita-do-Saber',
-    arquivoInicial: 'orbita-do-saber.html',
+    arquivoInicial: 'index.html',
   },
   {
     id: 'logica-em-dungeon',
     nome: 'Logic Dungeon',
     autores: 'Grupo Logic Dungeon',
     repositorio: 'https://github.com/Arcade-IFES/-Logic-Dungeon-',
-    arquivoInicial: 'logic_dungeon.html',
+    arquivoInicial: 'index.html',
   },
   {
     id: 'corrida-contra-o-sino',
@@ -25,6 +25,13 @@ export const JOGOS = [
     autores: 'Grupo Corrida Contra o Sino',
     repositorio: 'https://github.com/Arcade-IFES/Corrida-Contra-o-Sino',
     arquivoInicial: 'corrida-contra-o-sino.html',
+  },
+  {
+    id: 'estrelas-da-ciencia',
+    nome: 'Estrelas da Ciência',
+    autores: 'Pedro Paglioni, Isac Victor, Eliabe Loureiro',
+    repositorio: 'https://github.com/Arcade-IFES/estrelas-da-ciencia',
+    arquivoInicial: 'index.html',
   },
 ]
 

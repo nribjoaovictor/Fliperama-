@@ -99,6 +99,18 @@ test('extracts official PLACAR and legacy GAME_OVER scores', () => {
     payload: { score: 30 },
   }, 'example-game'), 30)
   assert.equal(extrairPontuacao({
+    tipo: 'PLACAR',
+    jogo: 'estrelas-da-ciencia',
+    versao: '1.0.0',
+    pontos: 1500,
+  }, 'estrelas-da-ciencia'), 1500)
+  assert.equal(extrairPontuacao({
+    tipo: 'PLACAR',
+    jogo: 'estrelas-da-ciencia',
+    versao: '1.0.0',
+    pontos: -1,
+  }, 'estrelas-da-ciencia'), null)
+  assert.equal(extrairPontuacao({
     type: 'PLACAR',
     jogo: 'other-game',
     payload: { pontos: 25 },
