@@ -38,12 +38,21 @@ for (const jogo of [
   }
 }
 
-test('mantém Corrida Contra o Sino e Estrelas da Ciência e rejeita alterações inesperadas nos jogos adaptados', () => {
+import { JOGOS } from '../server/services/sincronizacaoService'
+
+test('mantém Corrida Contra o Sino, Estrelas da Ciência e Encaixe Científico e rejeita alterações inesperadas nos jogos adaptados', () => {
   const html = '<html>jogo com integração própria</html>'
   assert.equal(adaptarHtmlDoJogo(html, 'corrida-contra-o-sino'), html)
   assert.equal(adaptarHtmlDoJogo(html, 'estrelas-da-ciencia'), html)
+  assert.equal(adaptarHtmlDoJogo(html, 'encaixe-cientifico'), html)
   assert.throws(() => adaptarHtmlDoJogo(html, 'orbita-do-saber'), /função de fim alterada/)
   assert.throws(() => adaptarHtmlDoJogo('function gameOver() {} function gameOver() {}', 'logica-em-dungeon'), /função de fim alterada/)
+
+  const jogoEncaixe = JOGOS.find((j) => j.id === 'encaixe-cientifico')
+  assert.ok(jogoEncaixe, 'Encaixe Científico deve estar presente na lista canônica JOGOS')
+  assert.equal(jogoEncaixe.nome, 'Encaixe Científico')
+  assert.equal(jogoEncaixe.arquivoInicial, 'index.html')
+  assert.equal(jogoEncaixe.repositorio, 'https://github.com/Arcade-IFES/Encaixe_cientifico')
 })
 
 test('embute questoes.json quando o jogo usa fetch, sem duplicar', async () => {

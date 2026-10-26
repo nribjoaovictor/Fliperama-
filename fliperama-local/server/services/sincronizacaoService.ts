@@ -33,6 +33,13 @@ export const JOGOS = [
     repositorio: 'https://github.com/Arcade-IFES/estrelas-da-ciencia',
     arquivoInicial: 'index.html',
   },
+  {
+    id: 'encaixe-cientifico',
+    nome: 'Encaixe Científico',
+    autores: 'Eliabe Loureiro, Isac Victor, Pedro Paglioni',
+    repositorio: 'https://github.com/Arcade-IFES/Encaixe_cientifico',
+    arquivoInicial: 'index.html',
+  },
 ]
 
 const PASTA_JOGOS = './data/jogos'
