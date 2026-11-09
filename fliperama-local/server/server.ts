@@ -40,7 +40,9 @@ fastify.post('/sincronizar', async () => {
   }
 })
 
-await fastify.register(registrarRotaResultados)
+await fastify.register(registrarRotaResultados, {
+  reenviarImediato: true,
+})
 
 export async function criarApp() {
   return fastify

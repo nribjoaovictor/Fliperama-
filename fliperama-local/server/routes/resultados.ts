@@ -1,7 +1,15 @@
 import type { FastifyInstance } from 'fastify'
 import { adicionarResultado } from '../services/filaResultadosService'
+import { reenviarPendentes } from '../services/reenvioService'
 
-export async function registrarRotaResultados(fastify: FastifyInstance) {
+export type OpcoesRotaResultados = {
+  reenviarImediato?: boolean
+}
+
+export async function registrarRotaResultados(
+  fastify: FastifyInstance,
+  opcoes?: OpcoesRotaResultados
+) {
   fastify.post('/resultados', async (request, reply) => {
     const resultado = request.body as {
       matricula?: unknown
@@ -58,6 +66,12 @@ export async function registrarRotaResultados(fastify: FastifyInstance) {
       pontuacao: resultado.pontuacao,
       avaliacao: resultado.avaliacao,
     })
+
+    if (opcoes?.reenviarImediato) {
+      reenviarPendentes().catch((erro) => {
+        console.error('Erro ao reenviar resultados imediatamente:', erro)
+      })
+    }
 
     return {
       sucesso: true,

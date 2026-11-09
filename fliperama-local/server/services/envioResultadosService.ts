@@ -1,7 +1,5 @@
 import type { ResultadoPartida } from './filaResultadosService'
-
-// Apontar API_G1 para a API oficial quando estiver disponível.
-const API_G1 = (process.env.API_G1 ?? 'http://localhost:4000').replace(/\/$/, '')
+import { obterConfiguracaoG1 } from './configService'
 
 const IDS_ANTIGOS: Record<string, string> = {
   '1': 'orbita-do-saber',
@@ -10,13 +8,17 @@ const IDS_ANTIGOS: Record<string, string> = {
 }
 
 export function formatarPlacar(resultado: ResultadoPartida) {
-  const jogoId = String(resultado.jogoId)
+  const jogoId = IDS_ANTIGOS[String(resultado.jogoId)] ?? String(resultado.jogoId)
 
   return {
     id_partida: resultado.id,
-    jogo_id: IDS_ANTIGOS[jogoId] ?? jogoId,
+    jogo: jogoId,
+    jogo_id: jogoId,
     jogador: resultado.apelido.trim().toUpperCase().slice(0, 9),
     pontos: resultado.pontuacao,
+    feedback: {
+      nota: resultado.avaliacao,
+    },
     nota: resultado.avaliacao,
     ...(resultado.jogadoEm ? { jogado_em: resultado.jogadoEm } : {}),
   }
@@ -25,13 +27,16 @@ export function formatarPlacar(resultado: ResultadoPartida) {
 export async function enviarResultadoParaG1(
   resultado: ResultadoPartida
 ) {
+  const { apiUrl, tokenEstacao } = obterConfiguracaoG1()
+
   try {
     const resposta = await fetch(
-      `${API_G1}/api/placares`,
+      `${apiUrl}/api/placares`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${tokenEstacao}`,
         },
         body: JSON.stringify(formatarPlacar(resultado)),
       }

@@ -47,9 +47,13 @@ test('envia um placar compatível com o ranking sem expor a matrícula', () => {
 
   assert.deepEqual(placar, {
     id_partida: 'partida-123',
+    jogo: 'corrida-contra-o-sino',
     jogo_id: 'corrida-contra-o-sino',
     jogador: 'JOGADOR',
     pontos: 150,
+    feedback: {
+      nota: 5,
+    },
     nota: 5,
     jogado_em: '2026-09-24T10:00:00.000Z',
   })
@@ -65,6 +69,7 @@ test('converte IDs de partidas já salvas antes da mudança no catálogo', () =>
     avaliacao: 3,
   })
 
+  assert.equal(placarAntigo.jogo, 'orbita-do-saber')
   assert.equal(placarAntigo.jogo_id, 'orbita-do-saber')
   assert.equal(placarAntigo.pontos, 0)
 })
@@ -91,18 +96,24 @@ test('mantém o resultado offline e o retira da fila após envio à API', async 
     assert.equal((await buscarFilaResultados()).length, 1)
 
     let placarEnviado: ReturnType<typeof formatarPlacar> | undefined
+    let cabecalhoAuth: string | undefined
     globalThis.fetch = async (url, options) => {
       assert.equal(url, 'http://localhost:4000/api/placares')
+      const headers = options?.headers as Record<string, string> | undefined
+      cabecalhoAuth = headers?.Authorization
       placarEnviado = JSON.parse(String(options?.body))
       return new Response(null, { status: 201 })
     }
 
     await reenviarPendentes()
     assert.equal((await buscarFilaResultados()).length, 0)
+    assert.equal(cabecalhoAuth, 'Bearer dev-estacao')
     assert.equal(placarEnviado?.id_partida, partida.id)
+    assert.equal(placarEnviado?.jogo, 'corrida-contra-o-sino')
     assert.equal(placarEnviado?.jogo_id, 'corrida-contra-o-sino')
     assert.equal(placarEnviado?.jogador, 'ABC')
     assert.equal(placarEnviado?.pontos, 42)
+    assert.deepEqual(placarEnviado?.feedback, { nota: 4 })
     assert.equal('matricula' in (placarEnviado ?? {}), false)
   } finally {
     globalThis.fetch = fetchOriginal
