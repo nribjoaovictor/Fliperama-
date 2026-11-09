@@ -1,75 +1,39 @@
-# React + TypeScript + Vite
+# Fliperama local (`fliperama-local`)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação web e servidor local do quiosque do Recreio Arcade (G3). A descrição completa dos fluxos de sincronização, contratos de placar e deploy está no [`README.md` na raiz do repositório](../README.md).
 
-Currently, two official plugins are available:
+## Comandos principais
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+# Instalar dependências
+npm ci
 
-## React Compiler
+# Subir apenas o fliperama (Fastify :3000 + Vite :5173) em um único terminal
+npm run start:local
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+# Subir ambiente integrado (Postgres Docker + API G1 :4000 + Fliperama :3000 e :5173)
+npm run start:integrado
 
-## Expanding the ESLint configuration
+# Subir os processos separadamente
+npm run server          # Servidor Fastify na porta 3000 (carrega .env se existir)
+npm run dev             # Frontend React/Vite na porta 5173
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+# Cadastrar os 5 jogos do fliperama no banco local da API G1
+npm run seed:api-local
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+# Testes, lint e build
+npm test                # Testes automatizados com node --test
+npm run lint            # ESLint
+npm run build           # Baixa os jogos em public/jogos/ e compila o frontend
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+## Configuração local (`.env`)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Se você usar `npm run start:local` ou `npm run start:integrado`, o script cria o arquivo `.env` a partir de `.env.example` quando ele ainda não existe. Para criar manualmente:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```dotenv
+API_G1=http://localhost:4000
+TOKEN_ESTACAO=dev-estacao
+PORT=3000
+CORS_ORIGIN=http://localhost:5173
 ```
