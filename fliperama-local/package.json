@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "server": "tsx watch --env-file-if-exists=.env server/server.ts",
+    "start:local": "tsx --env-file-if-exists=.env scripts/iniciar-ambiente.ts",
+    "start:integrado": "tsx --env-file-if-exists=.env scripts/iniciar-ambiente.ts --integrado",
     "sync:jogos": "tsx scripts/sync-jogos-build.ts",
     "seed:api-local": "tsx --env-file-if-exists=.env scripts/seed-jogos-api-local.ts",
     "build": "npm run sync:jogos && tsc -b && vite build",

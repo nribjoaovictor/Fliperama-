@@ -54,7 +54,7 @@ function descobrirContainerPostgres(): string {
   return nome
 }
 
-function executarSeed() {
+export function executarSeed() {
   const container = process.env.POSTGRES_CONTAINER || descobrirContainerPostgres()
   const sql = gerarSqlSeedJogos()
 
